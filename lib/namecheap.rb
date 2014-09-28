@@ -10,6 +10,7 @@ require 'namecheap/ssl'
 require 'namecheap/transfers'
 require 'namecheap/users'
 require 'namecheap/whois_guard'
+require 'namecheap/response'
 
 module Namecheap
 
