@@ -16,7 +16,7 @@ module Namecheap
 
           @contacts = {}
 
-          extract_contacts
+          extract_contacts unless bad_request
         end
 
         private

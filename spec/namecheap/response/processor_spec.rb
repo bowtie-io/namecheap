@@ -3,7 +3,8 @@ require 'spec_helper'
 describe Namecheap::Response::Processor do
   subject(:processor) { described_class }
   let(:success_body)  { File.read './spec/fixtures/success_body.xml' }
-  let(:error_body)    { File.read './spec/fixtures/error_body.xml' }
+  let(:error_body)    { File.read './spec/fixtures/error_response.xml' }
+  let(:error_message) { 'Parameter ClientIP is missing' }
 
   describe '#initialize' do
     it 'parses the response' do
@@ -13,7 +14,17 @@ describe Namecheap::Response::Processor do
     end
 
     context 'error_response' do
-      it 'parses the errors'
+      before do
+        @response = processor.new(error_body)
+      end
+
+      it 'finds errors' do
+        expect(@response.errors).to include error_message
+      end
+
+      it 'indicates that the request was bad' do
+        expect(@response.bad_request).to be true
+      end
     end
 
     context 'non error response' do

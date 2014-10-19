@@ -7,7 +7,7 @@ module Namecheap
         def initialize(body)
           super
 
-          set_availability
+          set_availability unless @bad_request
         end
 
         def available?(domain)

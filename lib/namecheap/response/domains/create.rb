@@ -7,7 +7,7 @@ module Namecheap
         def initialize(body)
           super
 
-          @successful = process_purchase
+          @successful = bad_request ? false : process_purchase
         end
 
         def successful?

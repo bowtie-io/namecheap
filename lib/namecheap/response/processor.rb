@@ -1,7 +1,7 @@
 module Namecheap
   module Response
     class Processor
-      attr_reader :response
+      attr_reader :response, :bad_request
 
       def initialize(body)
         @response = Nokogiri::XML(body)
@@ -16,7 +16,11 @@ module Namecheap
       private
 
       def set_errors
-        @errors = response.xpath('//xmlns:Errors').to_a
+        @errors = response.xpath('//xmlns:Errors').children.select do |error|
+          error.name == 'Error'
+        end.map { |error| error.text }
+
+        @bad_request = true
       end
 
       def has_errors?

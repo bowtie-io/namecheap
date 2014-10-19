@@ -7,8 +7,10 @@ module Namecheap
         def initialize(body)
           super
 
-          process_list
-          process_paging
+          unless bad_request
+            process_list
+            process_paging
+          end
         end
 
         private
