@@ -8,19 +8,27 @@ module Namecheap
     ENDPOINT = (ENVIRONMENT == 'production' ? PRODUCTION : SANDBOX)
 
     def get(command, options = {})
-      request 'get', command, options
+      response = request 'get', command, options
+
+      process(command, response)
     end
 
     def post(command, options = {})
-      request 'post', command, options
+      response = request 'post', command, options
+
+      process(command, response)
     end
 
     def put(command, options = {})
-      request 'post', command, options
+      response = request 'post', command, options
+
+      process(command, response)
     end
 
     def delete(command, options = {})
-      request 'post', command, options
+      response = request 'post', command, options
+
+      process(command, response)
     end
 
     def request(method, command, options = {})
@@ -57,6 +65,16 @@ module Namecheap
         api_key:   Namecheap.config.key,
         client_ip: Namecheap.config.client_ip
       }
+    end
+
+    def process(command, response)
+      processor = response_processor command
+
+      processor ? processor.new(response.body) : response
+    end
+
+    def response_processor(command)
+      Response.processor_for command
     end
   end
 end

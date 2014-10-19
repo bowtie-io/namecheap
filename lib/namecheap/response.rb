@@ -4,6 +4,8 @@ require_relative 'response/processor.rb'
 require_relative 'response/domains/create.rb'
 require_relative 'response/domains/check.rb'
 require_relative 'response/domains/get_list.rb'
+require_relative 'response/domains/get_contacts.rb'
+require_relative 'response/contact.rb'
 
 module Namecheap
   module Response
@@ -57,5 +59,25 @@ module Namecheap
       3031510 => 'Error response from Enom when the error count != 0',
       3011511 => 'UnKnown response from Provider',
     }.freeze
+
+    def self.processor_for(command)
+      begin
+        parse_command(command).inject(self) do
+          |base, part| base.const_get part
+        end
+      rescue
+        nil
+      end
+    end
+
+    def self.parse_command(command)
+      parts = command.split('.')
+
+      parts.map do |part|
+        part[0] = part[0].upcase
+
+        part
+      end
+    end
   end
 end
