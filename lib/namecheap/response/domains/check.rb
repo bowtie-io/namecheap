@@ -7,7 +7,7 @@ module Namecheap
         def initialize(body)
           super
 
-          set_availability unless @bad_request
+          @bad_request ? mark_bad : set_availability
         end
 
         def available?(domain)
@@ -16,7 +16,16 @@ module Namecheap
           to_bool :@available
         end
 
+        def successful?
+          @successful
+        end
+
         private
+
+        def mark_bad
+          @successful = false
+          @availability = {}
+        end
 
         def set_availability
           @availability = response.xpath('//xmlns:DomainCheckResult').inject({}) do |avb, node|
