@@ -7,19 +7,27 @@ module Namecheap
     ENVIRONMENT = defined?(Rails) && Rails.respond_to?(:env) ? Rails.env : (ENV["RACK_ENV"] || 'development')
 
     def get(command, options = {})
-      request 'get', command, options
+      response = request 'get', command, options
+
+      process(command, response)
     end
 
     def post(command, options = {})
-      request 'post', command, options
+      response = request 'post', command, options
+
+      process(command, response)
     end
 
     def put(command, options = {})
-      request 'post', command, options
+      response = request 'post', command, options
+
+      process(command, response)
     end
 
     def delete(command, options = {})
-      request 'post', command, options
+      response = request 'post', command, options
+
+      process(command, response)
     end
 
     def request(method, command, options = {})
@@ -51,7 +59,8 @@ module Namecheap
             "please add it to the Namecheap.configure block"
         end
       end
-      options = {
+
+      _options = {
         api_user:  Namecheap.config.username,
         user_name: Namecheap.config.username,
         api_key:   Namecheap.config.key,
@@ -62,6 +71,15 @@ module Namecheap
     def endpoint
       Namecheap.config.endpoint ||
        (ENVIRONMENT == 'production' ? PRODUCTION : SANDBOX)
+    end
+
+    def process(command, response)
+      processor = response_processor command
+      processor ? processor.new(response.body) : response
+    end
+
+    def response_processor(command)
+      Response.processor_for command
     end
   end
 end
